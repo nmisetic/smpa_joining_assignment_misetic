@@ -75,49 +75,51 @@ Next use left_join() to join the two tables based on the unique combination of p
 `by = c("firstcolumn_table1" = "firstcolumn_table2", "secondcolumn_table1" = "secondcolumn_table2"))`
 
 ```{r}
-left_join(precinct_voting_locations, primary_all, by = c("precinct_code" = "county_name")) %>% 
+left_join(precinct_voting_locations, primary_all, by = c("precinct_code" = "election_district_precinct", "county_code" = "county"))%>% 
   clean_names()
 
-# I used these columns because they best fit the question's description.
+precinct_county <- left_join(precinct_voting_locations, primary_all, by = c("precinct_code" = "election_district_precinct", "county_code" = "county"))
+
+# I used these columns because they best fit the question's description. I also created a new table from this data in order to use it for the following questions
 ```
 
 ## Answer questions
 
 ### Q1.
 
-Write code to produce a `votes` column which is the result of adding together `early_votes`, `election_night_votes`, `provisional_votes` and the mail-in votes, overwriting your dataframe so that it now has that `total_votes` column permanently.
+Write code to produce a `votes` column which is the result of adding together `early_votes`, `election_night_votes`, `provisional_votes` and the mail-in votes, overwriting your dataframe so that it now has that `votes` column permanently.
 
 ```{r}
-primary_all %>% 
-  group_by(county_name) %>% 
-  summarise(votes = sum(early_votes, election_night_votes, provisional_votes, mail_in_ballot_1_votes, mail_in_ballot_2_votes))
+precinct_county %>% 
+  group_by(county_name, precinct_code) %>%
+  mutate(votes= sum(early_votes, election_night_votes, provisional_votes, mail_in_ballot_1_votes, mail_in_ballot_2_votes))
 
-primary_all_total <- primary_all %>% 
-  group_by(county_name) %>% 
-  mutate(total_votes = sum(early_votes, election_night_votes, provisional_votes, mail_in_ballot_1_votes, mail_in_ballot_2_votes))
-
-# I grouped by county name so that the vote totals would be easier to see, then performed a sum function in order to add all the different votes together. I then created a new table with the total votes column, which shows these totals for each county.
+# I grouped by both county name and precinct code so that the vote totals would be easier to see, then performed a mutate function in order to visualize the total votes per grouping.
 ```
 
 Next, separately write code to show each county and precinct and calculate the total votes in the Governor's race - bearing in mind that each precinct will have multiple rows in the dataframe, but you only want to see one row for each precinct. (So you'll want to use grouping and summarizing.)
 
 ```{r}
-primary_all %>% 
-  group_by(county_name) %>% 
+precinct_county_total %>% 
+  group_by(precinct_code) %>% 
   filter(office_name=="Governor / Lt. Governor") %>% 
-  summarise(total_votes = sum(early_votes, election_night_votes, provisional_votes, mail_in_ballot_1_votes, mail_in_ballot_2_votes))
+  summarise(total_votes_gov = sum(early_votes, election_night_votes, provisional_votes, mail_in_ballot_1_votes, mail_in_ballot_2_votes)) %>% 
+  arrange(desc(total_votes_gov))
 
-# I grouped by county and filtered for Governor's races, so that there is less data to sift through. I then used the same code as the previous question in order to talley the votes
+# I grouped by precinct and filtered for Governor's races, so that there is less data to sift through. I then used the same code as the previous question in order to tally the votes
 ```
 
-What is the name and voting location of the precinct that saw the most votes in the governor's race? *Put answer here*
+What is the name and voting location of the precinct that saw the most votes in the governor's race? *Precinct Code 1001- Orleans Volunteer Fire Dept*
 
 ### Q2.
 
-Let's look at the average number of votes in each party's primary race for governor. Take the code you wrote for the last part of Q2, save the results to a new variable and then find the precincts with 0 total votes for governor.
+Let's look at the average number of votes in each party's primary race for governor. Take the code you wrote for the last part of Q1, save the results to a new variable and then find the precincts with 0 total votes for governor.
 
 ```{r}
-
+precinct_county %>% 
+  group_by(precinct_code) %>% 
+  filter(office_name=="Governor / Lt. Governor") %>% 
+  mutate(total_votes_gov = sum(early_votes, election_night_votes, provisional_votes, mail_in_ballot_1_votes, mail_in_ballot_2_votes))
 
 
 
