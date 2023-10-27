@@ -62,7 +62,7 @@ Next, let's read in the precinct voting location data and clean up the column na
 
 ```{r}
 precinct_voting_locations <- read_csv('data/precinct_voting_locations.csv') %>%
-                                clean_names()
+  clean_names()
 
 ```
 
@@ -71,7 +71,8 @@ Next use left_join() to join the two tables based on the unique combination of p
 `by = c("firstcolumn_table1" = "firstcolumn_table2", "secondcolumn_table1" = "secondcolumn_table2"))`
 
 ```{r}
-left_join(precinct_voting_locations, primary_all, by = c("county_code" = "county"))
+left_join(precinct_voting_locations, primary_all, by = c("precinct_code" = "county_name")) %>% 
+  clean_names()
 
 
 
