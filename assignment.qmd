@@ -42,12 +42,7 @@ primary_rep <- read_csv("data/md_primary_precinct_rep.csv") %>%
 Now Combine (stack) the two dataframes into one combined dataframe, so all the records from both tables are in one place to use.
 
 ```{r}
-
-
-
-
-
-
+full_join(primary_dem, primary_rep)
 ```
 
 Then use janitor's clean_names() function to clean up the column names so all spaces, punctuation and letter cases are dealt with.
@@ -59,11 +54,8 @@ To use clean_names() you apply it to your dataframe like:
 `clean_names()`
 
 ```{r}
-
-
-
-
-
+primary_all <- full_join(primary_dem, primary_rep) %>% 
+  clean_names()
 ```
 
 Next, let's read in the precinct voting location data and clean up the column names:
@@ -79,7 +71,7 @@ Next use left_join() to join the two tables based on the unique combination of p
 `by = c("firstcolumn_table1" = "firstcolumn_table2", "secondcolumn_table1" = "secondcolumn_table2"))`
 
 ```{r}
-
+left_join(precinct_voting_locations, primary_all, by = c("county_code" = "county"))
 
 
 
