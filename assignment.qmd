@@ -148,7 +148,34 @@ Choose your own adventure: I want you to come up with a question you could ask o
 First write the question and then try to answer it by writing code. If you're not sure of the exact code at a minimum, describe what you think you'd have to do to answer it and what the results would look like.
 
 ```{r}
+# Do Republicans and Democrats in Maryland have voting type preferences?
 
+primary_dem_behavior <- primary_dem %>% 
+  summarise(
+    total_early = sum(`Early Votes`),
+    total_night = sum(`Election Night Votes`),
+    total_provisional = sum(`Provisional Votes`),
+    total_mail_1 = sum(`Mail-In Ballot 1 Votes`),
+    total_mail_2 = sum(`Mail-In Ballot 2 Votes`)
+  ) %>% 
+  mutate(total = total_early + total_night + total_provisional + total_mail_1 + total_mail_2) %>% 
+  add_row(total_early = 2717290/14901215, total_night = 5882921/14901215, total_provisional = 676612/14901215, total_mail_1 = 4543514/14901215, total_mail_2 = 1080878/14901215)
+
+primary_rep_behavior <- primary_rep %>% 
+  summarise(
+    total_early = sum(`Early Votes`),
+    total_night = sum(`Election Night Votes`),
+    total_provisional = sum(`Provisional Votes`),
+    total_mail_1 = sum(`Mail-In Ballot 1 Votes`),
+    total_mail_2 = sum(`Mail-In Ballot 2 Votes`)
+  ) %>% 
+  mutate(total = total_early + total_night + total_provisional + total_mail_1 + total_mail_2) %>% 
+  add_row(total_early = 959467/5258124, total_night = 3317188/5258124, total_provisional = 155878/5258124, total_mail_1 = 594865/5258124, total_mail_2 = 230726/5258124)
+
+head(primary_dem_behavior)
+head(primary_rep_behavior)
+
+# As we can see from the data, a near equal percentage of voters from both parties voted early. A significantly larger proportion of Democrats had provisional and mail-in votes, while a larger proportion of Republicans voted on election night. This appears to reflect national trends.
 
 
 
